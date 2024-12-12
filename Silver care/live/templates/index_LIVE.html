@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>메인 화면</title>
+    <style>
+        #map {
+            width: 100%;
+            height: 400px;
+            margin-top: 20px;
+            display: none; /* 초기에는 지도를 숨겨놓습니다 */
+        }
+        #coordinates {
+            margin-top: 10px;
+        }
+    </style>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <h1>홈 캠</h1>
+    <button onclick="window.location.href='/room'">방 카메라 보기</button>
+    <button onclick="window.location.href='/living'">거실 카메라 보기</button>
+    <button onclick="showLocation()">현재 위치 보기</button>
+
+    <!-- 지도 표시 영역 -->
+    <div id="map"></div>
+
+    <!-- 위도와 경도 표시 영역 -->
+    <div id="coordinates"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // 위치 표시 함수
+        function showLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(displayMap);
+            }
+        }
+
+        // 위치 정보를 지도와 화면에 표시
+        function displayMap(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            // 지도 표시 영역 설정
+            document.getElementById("map").style.display = "block";
+
+            // 지도 초기화
+            const map = L.map("map").setView([latitude, longitude], 15);
+
+            // OpenStreetMap 타일 추가
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                maxZoom: 19,
+                attribution: "© OpenStreetMap contributors"
+            }).addTo(map);
+
+            // 현재 위치 마커 추가
+            L.marker([latitude, longitude])
+                .addTo(map)
+                .bindPopup("현재 위치")
+                .openPopup();
+
+            // 위도와 경도를 화면에 표시
+            document.getElementById("coordinates").innerHTML = 
+                `현재 위치의 위도: ${latitude.toFixed(6)}, 경도: ${longitude.toFixed(6)}`;
+        }
+    </script>
+</body>
+</html>
